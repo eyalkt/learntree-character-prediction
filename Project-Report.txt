@@ -1,0 +1,78 @@
+
+The project is written with Java.
+The “learntree” program output format - Java serialized.
+A single input photo is represented by the InputPhoto class.
+
+conditions are the predicates in the learning tree nodes. Group-1 conditions where a project given, 
+we had to come up with Group-2 conditions that improve the results.
+
+Group-1 conditions:
+  return p>128. where p denots pixel.
+  
+Group-2 conditions:
+- For every pixel p in the Input Photo, return p>128.
+- For every line in the Input Photo, run on the line from left to right –
+            1. If there was exactly 1 hit (interval of pixels >128) return true.
+            2. Same as 1, with 2, 3, and at least 4 hits.
+- Same as above with every column (run from top to bottom).
+- Same as above with the diagonal starts at the top left.
+- Same as above with the diagonal starts at the top right.
+
+Which can be depicted as (Group-1 conditions) ꓴ (NewGroup conditions), where NewGroup conditions can be abstracted as - choosing
+a line of pixels (horizontal, vertical or diagonal) and checking how many intersections (what we defined as a “hits”) there are
+between the chosen line and the Input Photo’s (mystery) Character. We denote Character, as our algorithm is capable with
+handling letters (text characters) as well as Numbers.
+The given learning algorithm, based on Decision Trees, utilizes binary conditions. So, we tried to think of visual features
+which can differentiate between text characters, and, also be normalized to binary questions. We came up with these type of
+simple rules as we noticed that text characters (in Hebrew, in most Latin-based Languages, and, of course Numbers) can be
+partitioned to several disjoint sets according to the number of hits between the characters and a relative chosen line of
+pixels. Some (easily distinct by us, humans) lines, and an “interesting” number of hits, which together compose a node condition
+of NewGroup conditions, can partition the set of characters into 2 (disjoint) groups where each group populates a relatively big
+chunk of characters (example below) - which is a very good quality trying to distinguish the characters. This quality explains
+our output tree’s lower error rate, compared to the tree compound only by Group 1 conditions. While choosing an “interesting”
+line and amount of hits, can be intuitive for us, the twosome is empirically chosen by the given algorithm’s information gain
+comparison mechanism based on the training set.
+Example- if we choose the middle horizontal line of pixels and a hit amount of 2, the set of printed digits will be partitioned
+to these groups: 2-hits- {456890} , non-2-hits- {1237}
+As handwritten characters shape is more diverse and ambiguous, we assumed that for a given line of pixels (again, chosen based
+on the training set) and a given handwritten character, there’s exists a matching line with the same hits rate as with the same
+character printed – a rational assumption as these are two “drawings” of the same character. This analogy strengthened our
+motivation to choose implementing this type of conditions.
+Other options we tried as Group-2 conditions: NewGroup conditions (without Group-1’s), other hits amount (exactly 4, exactly 5,
+more than 1, more than 2 and so on ...). After comparing the errors amount of mixed types of conditions we found our mixture to
+be the best yielding.
+Implementing the conditions was a design challenge. We chose to implement them using Java’s Predicate interface
+(https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html), initiating them with a lambda expression (see
+LearnTree’s class initConditions method). This made the initiation, handling and storing of the conditions very intuitive and
+easy, though later brought us another challenge - When trying to create the output file of the “learntree” program we
+encountered an obstacle, as the Predicate interface is not serializable. Trying to keep the design choice of ours, we created a
+new, simple, interface (SPred) extending both of Java’s Predicate and Serializable interfaces. This interface is what we ended
+up using. We wrapped the predicate with our Condition class, and a group of conditions with our ConditionGroup class.
+
+Implementing the Algorithm, We followed the instructions given in the project specification, implementing it with efficiency in
+mind. For the conditions, as mentioned above , both versions of conditions were implemented in the same manner, using SPred
+interface wrapped by the Condition class, wrapped by the ConditionGroup class. Implementing the tree, we distinguished between
+the learning-tree, which is the tree built step by step in the algorithm, and the learned-tree, which is the end of the learning
+algorithm final chosen tree. We found this separation rational, as most of the learning-tree functionality designed to help with
+the learning phase is not needed in the learned-tree, which will be used by the “predict” program. Also, the learning tree
+doesn’t need to be written to file - no serialization considerations in the learning phase. So this separation gave us more
+freedom to think about the core algorithm in the learning part, and produced us a “thinner” prediction tree, which reflected in
+a reduced output file size for the “learntree” program.
+Learning-tree data structure: (Node, JunctionNode and LeafNode classes). Terminology- we refer a photo matching a Node, means
+there exists path from the tree root to it, as a “visit”. Given a tree, predicting a photo tag is a deterministic procedure, as
+each condition holds a deterministic predicate - we refer this quality as the learning-tree determinism. The learning-tree is
+built throughout the learning algorithm (“learntree” program), it is basically a binary tree of JunctionNodes which hold
+references to two JunctionNode sons or two LeafNode sons (trueNode and falseNode), and also a Condition object. The LeafNode
+holds the tag identified with it and a list of InputPhoto instances (photos) sank to it - the photos which are predicted as tag
+according to the current tree. We use those photos in the learning algorithm main loop step, when looking for a condition
+(JunctionNode) suitable as replacement for a (already chosen) leaf. For every condition in the chosen ConditionGroup, we created
+a (maybe) temporary JunctionNode, and we found the improvement (information-gain * num-of-visits) of using it as a replacement
+to the leaf, by “visiting” it only with the training set photos of photos - other photos don’t need to be checked as there is no
+traversing path from the tree root to the (soon to be replaced) leaf - derived from the learning-tree determinism.
+Each learning tree produced in a relevant size (2^1 to 2^L), is compared to the best learning tree yet produced, by comparing
+the error’s amount on the validation set (see LearnTree’s checkNewTree method).
+Learned-tree data structure: (TreeNode, JunctionTreeNode and LeafTreeNode classes). The learned tree is a thinner, fully
+serializable version of the learning-tree destined to be outputted by the “learntree” program. It is produced from the final
+chosen learning-tree made in the “learning” phase (after LearnTree’s buildTree method). It holds all the information of
+learning-tree relevant to the “predict” program.
+We chose the output format to be Java Serialize, as it is very compact and easily manipulated.
