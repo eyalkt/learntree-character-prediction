@@ -1,5 +1,5 @@
 # learntree-character-prediction
-writen by Eyal Katz Talmon, and Avraham Cohen.
+writen by Eyal Katz Talmon, and Avraham Cohen.<br>
 Data Analysis CS project, deploying Learning-Tree algorithm to determine a character from an MNIST-like photo representation.
 
 Input format for learning part and prediction part is CVS data-set of 28x28 pixels, preceeded with the actual char (tag).<br>
