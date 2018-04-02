@@ -145,9 +145,9 @@ public class LearnTree {
 		return vSet;
 	}
 
-	////////////////////////////////////////////////
-	// algorithm core - building the learning try //
-	////////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	// algorithm core - building the learning tree //
+	/////////////////////////////////////////////////
 	
 	private static void buildTree() {
 
@@ -263,7 +263,7 @@ public class LearnTree {
 		}
 	}
 
-	// choose the learning try 1st leaf (1st step of the algorithm)
+	// choose the learning tree 1st leaf (1st step of the algorithm)
 	private static Node<?> chooseFirstLeaf() {
 
 		LeafNode firstNode = new LeafNode(' ',false);
