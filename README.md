@@ -6,7 +6,7 @@ Input format for learning part and prediction part is CVS data-set of 28x28 pixe
 each pixel is a value between 0 and 255, which represent its gray level (0 being white and 255 black). <br>
 see http://yann.lecun.com/exdb/mnist/ for more information about the dataset.
 
-To run the project one can call 'make' (in Linux shell), which will create the executables 'learntree' and 'predict'.
+To run the project one should call 'make' (in Linux shell), which will create the executables 'learntree' and 'predict'.
 more information about the implementation and 'conditions' (mentioned below) is in Project-Report.txt
 
 <p>
