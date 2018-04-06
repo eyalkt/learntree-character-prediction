@@ -7,7 +7,7 @@ each pixel is a value between 0 and 255, which represent its gray level (0 being
 see http://yann.lecun.com/exdb/mnist/ for more information about the dataset.
 
 To run the project one should call 'make' (in Linux shell), which will create the executables 'learntree' and 'predict'.<br>
-more information about the implementation and 'conditions' (mentioned below) is in Project-Report.txt
+more information about the implementation and 'conditions' (mentioned below) is in <a href="https://github.com/eyalkt/learntree-character-prediction/blob/master/Project-Report.txt">Project-Report.txt<a> .
 
 <p>
 <strong>The learning algorithm:</strong><br>
